@@ -1,7 +1,11 @@
 // @flow
 import React from 'react'
-import './App.css'
+import { Provider } from 'react-redux'
+import store from './store'
+import logo from './logo.png'
 
 export default () => (
-  <div>App</div>
+  <Provider store={store}>
+    <img src={logo} alt="logo" />
+  </Provider>
 )
