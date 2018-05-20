@@ -1,6 +1,6 @@
 // @flow
 
-type State = {
+export type UserState = {
   +isLogged: boolean,
   +data?: {
     +id: string
@@ -15,7 +15,7 @@ const initialState = {
   isLogged: false,
 }
 
-export default (state: State = initialState, action: Action) => {
+export default (state: UserState = initialState, action: Action) => {
   switch (action.type) {
     default:
       return state
