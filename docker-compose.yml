@@ -13,6 +13,6 @@ services:
     volumes: 
       - ./backend/api:/code
     working_dir: /code
-    command: bin/rails server
+    command:  bash -c "rm -f /code/tmp/pids/server.pid && bin/rails server"
     ports:
       - "3001:3000"
