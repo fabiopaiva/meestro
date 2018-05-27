@@ -12,7 +12,7 @@ export default () => (
     <Router>
       <LayoutWithAuth>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route path="/" component={Home} />
         </Switch>
       </LayoutWithAuth>
     </Router>

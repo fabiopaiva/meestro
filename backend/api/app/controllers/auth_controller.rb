@@ -5,7 +5,7 @@ class AuthController < ApplicationController
       spotify_user = RSpotify::User.new(request.env['omniauth.auth'])
       user = User.from_omniauth(request.env['omniauth.auth'], spotify_user.to_hash)
       session[:user_id] = user.id
-      redirect_to "#{ENV["CLIENT_HOST"]}/auth/spotify/callback"
+      redirect_to "#{ENV["CLIENT_HOST"]}/"
     rescue => exception
       redirect_to "#{ENV["CLIENT_HOST"]}/auth/fail?error=#{exception}"
     end

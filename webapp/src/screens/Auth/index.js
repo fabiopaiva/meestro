@@ -3,7 +3,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import type { ContextRouter } from 'react-router-dom'
-import 'url-search-params'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
@@ -20,8 +19,6 @@ const styles = theme => ({
   },
   icon: {
     marginRight: theme.spacing.unit,
-  },
-  loadingIcon: {
   },
 })
 
