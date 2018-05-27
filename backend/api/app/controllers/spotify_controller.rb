@@ -2,7 +2,16 @@ class SpotifyController < ApplicationController
   before_action :set_user
 
   def top_tracks
-    render json: { :topTracks => @spotify_user.top_tracks(time_range: 'short_term') }
+    begin
+      render json: { :topTracks => @spotify_user.top_tracks(time_range: 'short_term') }  
+    rescue => e
+      if e.message == '403 Forbidden'
+        render json: { :error => 'Unauthorized' }, status: :unauthorized
+        destroy_session
+      else
+        render json: { :error => e }, status: 400
+      end
+    end
   end
   
 

@@ -1,6 +1,8 @@
 // @flow
 import React from 'react'
 import { connect } from 'react-redux'
+import UserCard from '../../components/UserCard'
+import Wizard from '../../components/Wizard'
 import type { State } from '../../types/state'
 import type { UserState } from '../../reducers/user'
 
@@ -9,8 +11,13 @@ type Props = {
 }
 
 const Home = ({ user }: Props) => (
-  <div>
-    <h1>Welcome {user.data && user.data.name}</h1>
+  <div className="Home">
+    {user.isLogged && (
+      <React.Fragment>
+        <UserCard user={user.data} className="userCard" />
+        <Wizard />
+      </React.Fragment>
+  )}
   </div>
 )
 const mapStateToProps = (state: State) => ({

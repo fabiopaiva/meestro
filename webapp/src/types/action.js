@@ -1,11 +1,4 @@
 // @flow
 
-type USER_AUTHENTICATE_REQUEST = { type: 'USER_AUTHENTICATE_REQUEST' }
-type USER_AUTHENTICATE_ERROR = { type: 'USER_AUTHENTICATE_ERROR', error: Error }
-type USER_AUTHENTICATE_SUCCESS = { type: 'USER_AUTHENTICATE_SUCCESS', data: Object }
-
-export type Action =
-  | USER_AUTHENTICATE_REQUEST
-  | USER_AUTHENTICATE_SUCCESS
-  | USER_AUTHENTICATE_ERROR
+export type Action = { type: string, error?: Error, [any]: any }
 

@@ -5,13 +5,12 @@ import { withRouter } from 'react-router-dom'
 import type { ContextRouter } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { withStyles } from '@material-ui/core/styles'
 import Icon from '@material-ui/core/Icon'
 import { authorize, authenticate } from '../../actions/users'
 import type { UserState } from '../../reducers/user'
 import type { State } from '../../types/state'
-import LoadingIcon from '../../components/LoadingIcon'
-
 
 const styles = theme => ({
   auth: {
@@ -49,7 +48,7 @@ class Auth extends React.PureComponent<AuthProps> {
         direction="row"
         justify="center"
       >
-        {(user.isFetching) && <LoadingIcon />}
+        {(user.isFetching) && <CircularProgress />}
         {!user.isFetching && !user.isLogged && (
           <Button variant="raised" color="primary" onClick={this.handleBtnClick}>
             <Icon className={classes.icon}>lock</Icon>

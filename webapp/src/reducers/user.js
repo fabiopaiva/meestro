@@ -1,14 +1,12 @@
 // @flow
 import { actions } from '../actions/users'
 import type { Action } from '../types/action'
+import type { UserModel } from '../types/user'
 
 export type UserState = {
   +isLogged: boolean,
   +isFetching: boolean,
-  +data?: {
-    +id: string,
-    +name: string,
-  },
+  +data?: UserModel,
   +error?: Error,
 }
 
@@ -28,7 +26,6 @@ export default (state: UserState = initialState, action: Action) => {
         ...state,
         data: action.data,
         isFetching: false,
-        isLoaded: true,
         isLogged: true,
       }
     case actions.USER_AUTHENTICATE_UNAUTHORIZED:
@@ -36,7 +33,6 @@ export default (state: UserState = initialState, action: Action) => {
       return {
         ...state,
         data: undefined,
-        isLoaded: false,
         isLogged: false,
         isFetching: false,
       }

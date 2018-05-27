@@ -4,9 +4,11 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import type { Store } from './types/store'
 import user from './reducers/user'
+import topTracks from './reducers/topTracks'
 
 const reducers = {
   user,
+  topTracks,
 }
 
 export type Reducers = typeof reducers
