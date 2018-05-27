@@ -1,0 +1,13 @@
+.loadingIcon {
+  animation: loading-spinner infinite 1s linear;
+
+  @keyframes loading-spinner {
+    0% {
+      transform: rotate(1turn)
+    }
+
+    to {
+      transform: rotate(0deg)
+    }
+  }
+}
