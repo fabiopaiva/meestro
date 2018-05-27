@@ -31,5 +31,21 @@ module Api
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.middleware.insert_after ActiveRecord::Migration::CheckPending, ActionDispatch::Cookies
+    config.middleware.insert_after ActionDispatch::Cookies, ActionDispatch::Session::CookieStore
+
+
+    RSpotify::authenticate(ENV["SPOTIFY_CLIENT_ID"], ENV["SPOTIFY_CLIENT_SECRET"])
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins ENV['CLIENT_HOST']
+        resource '*', 
+          headers: :any, 
+          methods: [:get, :post, :options, :delete], 
+          credentials: true
+      end
+    end
   end
 end
