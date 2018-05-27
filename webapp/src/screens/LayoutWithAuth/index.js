@@ -4,7 +4,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import teal from '@material-ui/core/colors/teal'
-import lightBlue from '@material-ui/core/colors/lightBlue'
+import blueGrey from '@material-ui/core/colors/blueGrey'
 import type { UserState } from '../../reducers/user'
 import { Auth } from '../'
 import Topbar from '../../components/Topbar'
@@ -13,7 +13,7 @@ import './LayoutWithAuth.css'
 const theme = createMuiTheme({
   palette: {
     primary: teal,
-    secondary: lightBlue,
+    secondary: blueGrey,
   },
 })
 

@@ -4,17 +4,17 @@ import { withStyles } from '@material-ui/core/styles'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
-import Grid from '@material-ui/core/Grid'
+import StepContent from '@material-ui/core/StepContent'
 import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
 import Icon from '@material-ui/core/Icon'
 import Typography from '@material-ui/core/Typography'
 import TopTracksComponent from '../../components/TopTracks'
-import type { TopTracks } from '../../types/spotify'
+import TopArtistsComponent from '../../components/TopArtists'
+import type { TopTracks, TopArtists } from '../../types/spotify'
 
 const styles = theme => ({
   container: {
-    margin: theme.spacing.unit,
     flex: 1,
   },
   controls: {
@@ -27,6 +27,9 @@ const styles = theme => ({
   typography: {
     margin: theme.spacing.unit * 2,
   },
+  stepper: {
+    padding: 10,
+  },
 })
 
 type Props = {
@@ -34,6 +37,7 @@ type Props = {
 }
 type State = {
   topTracks: TopTracks,
+  topArtists: TopArtists,
   activeStep: number,
   warningMessage: ?string,
   anchorEl: ?HTMLButtonElement
@@ -42,6 +46,7 @@ type State = {
 class Wizard extends React.PureComponent<Props, State> {
   state = {
     topTracks: [],
+    topArtists: [],
     activeStep: 0,
     warningMessage: null,
     anchorEl: null,
@@ -49,6 +54,16 @@ class Wizard extends React.PureComponent<Props, State> {
 
   handleTopTracksChange = (topTracks: TopTracks) => {
     this.setState({ topTracks })
+  }
+
+  handleTopArtistsChange = (topArtists: TopArtists) => {
+    console.log(topArtists)
+    this.setState({ topArtists })
+  }
+
+  handlePrevious = () => {
+    const { activeStep } = this.state
+    this.setState({ activeStep: activeStep > 0 ? activeStep - 1 : activeStep })
   }
 
   handleNext = (event: Event) => {
@@ -60,7 +75,7 @@ class Wizard extends React.PureComponent<Props, State> {
     if (topTracks.length === 0) {
       this.setState({ warningMessage: 'Select at least one track' })
     } else {
-      this.setState({ activeStep: activeStep <= 2 ? activeStep + 1 : activeStep })
+      this.setState({ activeStep: activeStep <= 3 ? activeStep + 1 : activeStep })
     }
   }
 
@@ -72,51 +87,70 @@ class Wizard extends React.PureComponent<Props, State> {
 
   render() {
     const { classes } = this.props
-    const { activeStep, warningMessage, anchorEl } = this.state
-    const steps = ['Select tracks', 'Select genres', 'Get your playlist']
+    const { activeStep, warningMessage, anchorEl, topTracks, topArtists } = this.state
+    const steps = ['Tracks', 'Artists', 'Genres', 'Done']
     return (
       <div className={classes.container}>
-        <Stepper activeStep={activeStep}>
+        <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
           {steps.map(label => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
+              <StepContent>
+                {activeStep === 0 && (
+                  <TopTracksComponent
+                    title="Choose some songs to create your great playlist"
+                    onChange={this.handleTopTracksChange}
+                    initial={topTracks}
+                  />
+                )}
+                {activeStep === 1 && (
+                  <TopArtistsComponent
+                    title="Choose some artists to create your great playlist"
+                    onChange={this.handleTopArtistsChange}
+                    initial={topArtists}
+                  />
+                )}
+                {activeStep > 0 && (
+                  <Button
+                    variant="raised"
+                    color="secondary"
+                    onClick={this.handlePrevious}
+                    className={classes.button}
+                  >
+                    <Icon>keyboard_arrow_left</Icon>
+                    Back
+                  </Button>
+                )}
+                <Button
+                  variant="raised"
+                  color="primary"
+                  onClick={this.handleNext}
+                  className={classes.button}
+                >
+                  Next Step
+                  <Icon>keyboard_arrow_right</Icon>
+                </Button>
+              </StepContent>
             </Step>
           ))}
         </Stepper>
-        { activeStep === 0 && (
-          <TopTracksComponent
-            title="Choose some songs to create your great playlist"
-            onChange={this.handleTopTracksChange}
-          />
-        )}
-        <Grid container className={classes.controls}>
-          <Button
-            variant="raised"
-            color="primary"
-            onClick={this.handleNext}
-            className={classes.button}
-          >
-            Next Step
-            <Icon>keyboard_arrow_right</Icon>
-          </Button>
-          <Popover
-            open={!!warningMessage}
-            anchorEl={anchorEl}
-            onClose={this.handlePopoverClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-          >
-            <Typography className={classes.typography}>
-              {warningMessage}
-            </Typography>
-          </Popover>
-        </Grid>
+        <Popover
+          open={!!warningMessage}
+          anchorEl={anchorEl}
+          onClose={this.handlePopoverClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+        >
+          <Typography className={classes.typography}>
+            {warningMessage}
+          </Typography>
+        </Popover>
       </div>
     )
   }

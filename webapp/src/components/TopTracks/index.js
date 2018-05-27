@@ -4,8 +4,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
@@ -22,6 +20,7 @@ type Props = {
   fetchTopTracks: () => void,
   topTracks: TopTracksState,
   onChange: (Array<TopTrack>) => void,
+  initial?: Array<TopTrack>,
 }
 type State = {
   tracks: Array<TopTrack>
@@ -31,9 +30,15 @@ class TopTracks extends React.Component<Props, State> {
   static defaultProps = {
     title: 'Top Tracks',
     onChange: () => {},
+    initial: [],
   }
 
-  state = { tracks: [] }
+  constructor(props) {
+    super(props)
+    this.state = {
+      tracks: props.initial,
+    }
+  }
 
   componentDidMount() {
     const { topTracks } = this.props
@@ -83,14 +88,12 @@ class TopTracks extends React.Component<Props, State> {
     if (error) return <p>Something went wrong: {error.message}</p>
 
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="subheading">{title}</Typography>
-          <List>
-            {data.map(this.renderTrack)}
-          </List>
-        </CardContent>
-      </Card>
+      <React.Fragment>
+        <Typography variant="subheading">{title}</Typography>
+        <List>
+          {data.map(this.renderTrack)}
+        </List>
+      </React.Fragment>
     )
   }
 }

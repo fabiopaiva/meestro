@@ -5,10 +5,12 @@ import thunk from 'redux-thunk'
 import type { Store } from './types/store'
 import user from './reducers/user'
 import topTracks from './reducers/topTracks'
+import topArtists from './reducers/topArtists'
 
 const reducers = {
   user,
   topTracks,
+  topArtists,
 }
 
 export type Reducers = typeof reducers

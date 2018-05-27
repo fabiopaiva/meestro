@@ -28,3 +28,5 @@ export type TopTrack = {
 }
 
 export type TopTracks = Array<TopTrack>
+
+export type TopArtists = Array<Artist>
