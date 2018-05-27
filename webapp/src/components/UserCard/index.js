@@ -33,15 +33,15 @@ type Props = {
 
 const UserCard = ({ user, classes, className }: Props) => (
   <Card className={[classes.card, className].join(' ')}>
-    <CardMedia
+    {user.image && (<CardMedia
       className={classes.cover}
       image={user.image}
-    />
+    />)}
     <div className={classes.details}>
       <CardContent className={classes.content}>
         <Typography variant="headline">Welcome</Typography>
         <Typography variant="subheading" color="textSecondary">
-          {user.name}
+          {user.name || user.email}
         </Typography>
       </CardContent>
     </div>

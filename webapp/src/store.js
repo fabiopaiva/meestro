@@ -6,11 +6,13 @@ import type { Store } from './types/store'
 import user from './reducers/user'
 import topTracks from './reducers/topTracks'
 import topArtists from './reducers/topArtists'
+import recommendations from './reducers/recommendations'
 
 const reducers = {
   user,
   topTracks,
   topArtists,
+  recommendations,
 }
 
 export type Reducers = typeof reducers

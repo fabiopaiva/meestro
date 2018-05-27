@@ -5,25 +5,22 @@ import { connect } from 'react-redux'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
 import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import Checkbox from '@material-ui/core/Checkbox'
-import Avatar from '@material-ui/core/Avatar'
 import { fetchTopTracks } from '../../actions/spotify'
+import Track from '../Track'
 import type { State as ReduxState } from '../../types/state'
 import type { TopTracksState } from '../../reducers/topTracks'
-import type { TopTrack } from '../../types/spotify'
+import type { Track as TrackType } from '../../types/spotify'
 
 type Props = {
   title?: string,
   fetchTopTracks: () => void,
   topTracks: TopTracksState,
-  onChange: (Array<TopTrack>) => void,
-  initial?: Array<TopTrack>,
+  onChange: (Array<TrackType>) => void,
+  initial?: Array<TrackType>,
+  limit?: number,
 }
 type State = {
-  tracks: Array<TopTrack>
+  tracks: Array<TrackType>
 }
 
 class TopTracks extends React.Component<Props, State> {
@@ -31,6 +28,7 @@ class TopTracks extends React.Component<Props, State> {
     title: 'Top Tracks',
     onChange: () => {},
     initial: [],
+    limit: null,
   }
 
   constructor(props) {
@@ -47,13 +45,15 @@ class TopTracks extends React.Component<Props, State> {
     }
   }
 
-  handleToggle = (track: TopTrack) => {
-    const { onChange } = this.props
+  handleToggle = (track: TrackType) => {
+    const { onChange, limit } = this.props
     const { tracks } = this.state
     if (!tracks.includes(track)) {
-      tracks.push(track)
-      onChange(tracks)
-      this.setState({ tracks })
+      if (!limit || tracks.length < limit) {
+        tracks.push(track)
+        onChange(tracks)
+        this.setState({ tracks })
+      }
     } else {
       const filtered = tracks.filter(t => t.id !== track.id)
       onChange(filtered)
@@ -61,29 +61,9 @@ class TopTracks extends React.Component<Props, State> {
     }
   }
 
-  renderTrack = (track: TopTrack) => {
-    const { album: { images, name: albumName }, artists } = track
-    const { tracks } = this.state
-
-    const img = images && images.reduce((acc, item) => (item.width < acc.width ? item : acc))
-    const artistsNames = artists.reduce((acc, item) => (acc.concat(item.name)), [])
-
-    return (
-      <ListItem key={track.id} dense button onClick={() => this.handleToggle(track)}>
-        {img && <Avatar alt="Remy Sharp" src={img.url} />}
-        <ListItemText primary={track.name} secondary={`${albumName} - ${artistsNames.join(' / ')}`} />
-        <ListItemSecondaryAction>
-          <Checkbox
-            onChange={() => this.handleToggle(track)}
-            checked={tracks.some(item => track.id === item.id)}
-          />
-        </ListItemSecondaryAction>
-      </ListItem>
-    )
-  }
-
   render() {
     const { title, topTracks: { data, isFetching, error } } = this.props
+    const { tracks } = this.state
     if (isFetching) return <CircularProgress />
     if (error) return <p>Something went wrong: {error.message}</p>
 
@@ -91,7 +71,14 @@ class TopTracks extends React.Component<Props, State> {
       <React.Fragment>
         <Typography variant="subheading">{title}</Typography>
         <List>
-          {data.map(this.renderTrack)}
+          {data.map(track => (
+            <Track
+              key={track.id}
+              checked={tracks.some(item => track.id === item.id)}
+              onClick={() => this.handleToggle(track)}
+              track={track}
+            />
+          ))}
         </List>
       </React.Fragment>
     )

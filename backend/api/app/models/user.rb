@@ -5,7 +5,7 @@ class User < ApplicationRecord
         user.uid = auth_hash['uid']
         user.name = auth_hash['info']['display_name']
         user.email = auth_hash['info']['email']
-        user.image = auth_hash['info']['images'].first.url
+        user.image = auth_hash['info']['images'].first.url if auth_hash['info']['images'].size > 0
         user.save!
         user
     end

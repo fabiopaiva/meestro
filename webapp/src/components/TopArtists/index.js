@@ -21,6 +21,7 @@ type Props = {
   topArtists: TopArtistsState,
   onChange: (Array<Artist>) => void,
   initial?: Array<Artist>,
+  limit?: number,
 }
 type State = {
   artists: Array<Artist>
@@ -31,6 +32,7 @@ class TopArtists extends React.Component<Props, State> {
     title: 'Top Artists',
     onChange: () => {},
     initial: [],
+    limit: null,
   }
 
   constructor(props) {
@@ -48,12 +50,14 @@ class TopArtists extends React.Component<Props, State> {
   }
 
   handleToggle = (artist: Artist) => {
-    const { onChange } = this.props
+    const { onChange, limit } = this.props
     const { artists } = this.state
     if (!artists.includes(artist)) {
-      artists.push(artist)
-      onChange(artists)
-      this.setState({ artists })
+      if (!limit || artists.length < limit) {
+        artists.push(artist)
+        onChange(artists)
+        this.setState({ artists })
+      }
     } else {
       const filtered = artists.filter(t => t.id !== artist.id)
       onChange(filtered)
@@ -69,7 +73,7 @@ class TopArtists extends React.Component<Props, State> {
 
     return (
       <ListItem key={artist.id} dense button onClick={() => this.handleToggle(artist)}>
-        {img && <Avatar alt="Remy Sharp" src={img.url} />}
+        {img && <Avatar alt={artist.name} src={img.url} />}
         <ListItemText primary={artist.name} />
         <ListItemSecondaryAction>
           <Checkbox

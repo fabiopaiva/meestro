@@ -18,6 +18,7 @@ class AuthController < ApplicationController
         :session => session[:user_id],
         :uid => current_user.uid,
         :name => current_user.name,
+        :email => current_user.email,
         :image => current_user.image
       }
     else 

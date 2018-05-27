@@ -20,14 +20,17 @@ export type Artist = {
   +genres: Array<string>,
 }
 
-export type TopTrack = {
+export type Track = {
   +id: string,
   +name: string,
   +image: string,
   +album: Album,
   +artists: Array<Artist>,
+  +uri: string,
 }
 
-export type TopTracks = Array<TopTrack>
+export type TopTracks = Array<Track>
 
 export type TopArtists = Array<Artist>
+
+export type Recommendations = Array<Track>

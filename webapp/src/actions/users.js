@@ -50,3 +50,8 @@ export const logout = () => async (dispatch: Dispatch) => {
     return dispatch({ type: actions.USER_LOGOUT_ERROR, error })
   }
 }
+
+export const unauthorised = (data: { [any]: any }) => ({
+  type: actions.USER_AUTHENTICATE_UNAUTHORIZED,
+  data,
+})
