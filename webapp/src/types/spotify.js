@@ -16,7 +16,8 @@ export type Artist = {
     +height: number,
     +url: string,
     +width: number,
-  }>
+  }>,
+  +genres: Array<string>,
 }
 
 export type TopTrack = {

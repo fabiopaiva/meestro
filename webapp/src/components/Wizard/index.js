@@ -9,6 +9,11 @@ import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
 import Icon from '@material-ui/core/Icon'
 import Typography from '@material-ui/core/Typography'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
+import Checkbox from '@material-ui/core/Checkbox'
 import TopTracksComponent from '../../components/TopTracks'
 import TopArtistsComponent from '../../components/TopArtists'
 import type { TopTracks, TopArtists } from '../../types/spotify'
@@ -38,15 +43,17 @@ type Props = {
 type State = {
   topTracks: TopTracks,
   topArtists: TopArtists,
+  genres: Array<string>,
   activeStep: number,
   warningMessage: ?string,
-  anchorEl: ?HTMLButtonElement
+  anchorEl: ?HTMLButtonElement,
 }
 
-class Wizard extends React.PureComponent<Props, State> {
+class Wizard extends React.Component<Props, State> {
   state = {
     topTracks: [],
     topArtists: [],
+    genres: [],
     activeStep: 0,
     warningMessage: null,
     anchorEl: null,
@@ -57,7 +64,6 @@ class Wizard extends React.PureComponent<Props, State> {
   }
 
   handleTopArtistsChange = (topArtists: TopArtists) => {
-    console.log(topArtists)
     this.setState({ topArtists })
   }
 
@@ -82,12 +88,50 @@ class Wizard extends React.PureComponent<Props, State> {
   handlePopoverClose = () => {
     this.setState({
       warningMessage: null,
-    });
-  };
+    })
+  }
+
+  handleGenreToggle = (genre: string) => {
+    const { genres } = this.state
+    if (!genres.includes(genre)) {
+      genres.push(genre)
+      this.setState({ genres })
+    } else {
+      const filtered = genres.filter(item => item !== genre)
+      this.setState({ genres: filtered })
+    }
+  }
+
+  renderGenresList() {
+    const { topArtists, genres } = this.state
+    const list = new Set()
+    topArtists.forEach(artist => artist.genres.forEach(genre => list.add(genre)))
+
+    return (
+      <List>
+        {Array.from(list).sort().map(genre => (
+          <ListItem key={genre} dense button onClick={() => this.handleGenreToggle(genre)}>
+            <ListItemText primary={genre} />
+            <ListItemSecondaryAction>
+              <Checkbox
+                onChange={() => this.handleGenreToggle(genre)}
+                checked={genres.some(item => genre === item)}
+              />
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+    )
+  }
 
   render() {
     const { classes } = this.props
-    const { activeStep, warningMessage, anchorEl, topTracks, topArtists } = this.state
+    const {
+      activeStep,
+      warningMessage,
+      anchorEl, topTracks,
+      topArtists,
+    } = this.state
     const steps = ['Tracks', 'Artists', 'Genres', 'Done']
     return (
       <div className={classes.container}>
@@ -110,6 +154,7 @@ class Wizard extends React.PureComponent<Props, State> {
                     initial={topArtists}
                   />
                 )}
+                {activeStep === 2 && this.renderGenresList()}
                 {activeStep > 0 && (
                   <Button
                     variant="raised"
