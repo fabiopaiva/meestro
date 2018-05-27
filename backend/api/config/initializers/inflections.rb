@@ -18,4 +18,5 @@
 
 ActiveSupport::Inflector.inflections do |inflect|
     inflect.uncountable "auth"
+    inflect.uncountable "spotify"
   end

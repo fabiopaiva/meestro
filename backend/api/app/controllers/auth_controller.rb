@@ -18,7 +18,7 @@ class AuthController < ApplicationController
         :session => session[:user_id],
         :uid => current_user.uid,
         :name => current_user.name,
-        :images => current_user.image
+        :image => current_user.image
       }
     else 
       render json: { :error => 'Unauthorized' }, status: :unauthorized
