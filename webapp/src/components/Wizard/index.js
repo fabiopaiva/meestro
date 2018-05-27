@@ -23,10 +23,10 @@ import { createPlaylist } from '../../actions/spotify'
 import type {
   TopTracks as TopTracksType,
   TopArtists as TopArtistsType,
-  Recommendations as RecommendationsType,
   Track as TrackType,
 } from '../../types/spotify'
 import type { State as ReduxState } from '../../types/state'
+import type { RecommendationsState } from '../../reducers/recommendations'
 
 const styles = theme => ({
   container: {
@@ -50,18 +50,18 @@ const styles = theme => ({
 type Props = {
   classes: Object,
   isLoading: boolean,
-  createPlaylist: (tracks: Array<TrackType>) => Promise<Object>
+  createPlaylist: (tracks: Array<TrackType>) => Promise<Object>,
+  recommendations: RecommendationsState,
 }
 
 type State = {
   topTracks: TopTracksType,
   topArtists: TopArtistsType,
   genres: Array<string>,
-  recommendations: RecommendationsType,
   activeStep: number,
   warningMessage: ?string,
   anchorEl: ?HTMLButtonElement,
-  playlistUrl: ?string,
+  excluded: Array<TrackType>,
 }
 
 class Wizard extends React.Component<Props, State> {
@@ -69,11 +69,10 @@ class Wizard extends React.Component<Props, State> {
     topTracks: [],
     topArtists: [],
     genres: [],
-    recommendations: [],
     activeStep: 0,
     warningMessage: null,
     anchorEl: null,
-    playlistUrl: null,
+    excluded: [],
   }
 
   handleTopTracksChange = (topTracks: TopTracksType) => {
@@ -84,8 +83,13 @@ class Wizard extends React.Component<Props, State> {
     this.setState({ topArtists })
   }
 
-  handleRecommendationsChange = (recommendations: RecommendationsType) => {
-    this.setState({ recommendations })
+  handleRecommendationsChange = (track: TrackType) => {
+    const { excluded } = this.state
+    if (excluded.includes(track)) {
+      this.setState({ excluded: excluded.filter(item => item.id !== track.id) })
+    } else {
+      this.setState({ excluded: [...excluded, track] })
+    }
   }
 
   handlePrevious = () => {
@@ -98,8 +102,9 @@ class Wizard extends React.Component<Props, State> {
       activeStep,
       topTracks,
       anchorEl,
-      recommendations,
+      excluded,
     } = this.state
+    const { recommendations } = this.props
     if (!anchorEl) {
       // $FlowFixMe Flow doesn't understand event.target returns a button html element
       this.setState({ anchorEl: event.target })
@@ -109,12 +114,7 @@ class Wizard extends React.Component<Props, State> {
     } else {
       this.setState({ activeStep: activeStep <= 3 ? activeStep + 1 : activeStep })
       if (activeStep === 3) {
-        this.props.createPlaylist(recommendations).then((response) => {
-          console.log(response)
-          if (response.type === 'PLAYLIST_CREATE_SUCCESS') {
-            this.setState({ playlistUrl: response.data.external_urls.spotify })
-          }
-        })
+        this.props.createPlaylist(recommendations.data.filter(item => !excluded.includes(item)))
       }
     }
   }
@@ -130,7 +130,7 @@ class Wizard extends React.Component<Props, State> {
     if (!genres.includes(genre)) {
       if (genres.length < 5) {
         genres.push(genre)
-        this.setState({ genres })
+        this.setState({ genres: [...genres, genre] })
       }
     } else {
       const filtered = genres.filter(item => item !== genre)
@@ -139,7 +139,10 @@ class Wizard extends React.Component<Props, State> {
   }
 
   openPlaylist = () => {
-    window.open(this.state.playlistUrl)
+    const { recommendations } = this.props
+    if (recommendations.playlist) {
+      window.open(recommendations.playlist.external_urls.spotify)
+    }
   }
 
   renderGenresList() {
@@ -173,16 +176,18 @@ class Wizard extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, isLoading } = this.props
+    const { classes, isLoading, recommendations } = this.props
     const {
       activeStep,
       warningMessage,
       anchorEl, topTracks,
       topArtists,
       genres,
-      playlistUrl,
+      excluded,
     } = this.state
     const steps = ['Select Tracks', 'Select Artists', 'Select Genres', 'Confirm your playlist']
+    console.log('render')
+    console.log(excluded)
     return (
       <div className={classes.container}>
         <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
@@ -214,7 +219,7 @@ class Wizard extends React.Component<Props, State> {
                     artists={topArtists}
                     tracks={topTracks}
                     genres={genres}
-                    onLoad={this.handleRecommendationsChange}
+                    excluded={excluded}
                   />
                 )}
                 {!isLoading && activeStep > 0 && (
@@ -260,8 +265,8 @@ class Wizard extends React.Component<Props, State> {
             {warningMessage}
           </Typography>
         </Popover>
-        {activeStep === 4 && !playlistUrl && <CircularProgress />}
-        {activeStep === 4 && playlistUrl && (
+        {activeStep === 4 && !recommendations.playlist && <CircularProgress />}
+        {activeStep === 4 && recommendations.playlist && (
           <Button
             variant="raised"
             color="primary"
@@ -279,6 +284,7 @@ class Wizard extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ReduxState) => ({
   isLoading: state.topArtists.isFetching || state.topTracks.isFetching,
+  recommendations: state.recommendations,
 })
 
 export default withStyles(styles)(connect(mapStateToProps, { createPlaylist })(Wizard))

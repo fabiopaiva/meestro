@@ -19,7 +19,7 @@ class SpotifyController < ApplicationController
     end
   end
 
-  def recomendations
+  def recommendations
     begin
       information = request.raw_post
       data_parsed = JSON.parse(information)

@@ -17,22 +17,16 @@ type Props = {
   fetchRecommendations: (params: RecommendationsParams) => Promise<Object>,
   recommendations: RecommendationsState,
   title?: string,
-  onChange: (Array<TrackType>) => void,
-  onLoad?: (Array<TrackType>) => void,
+  onChange: (TrackType) => void,
+  excluded: Array<TrackType>,
 }
 
-type State = {
-  selected: Array<TrackType>,
-}
+type State = {}
 
 class Recommendations extends React.Component<Props, State> {
   static defaultProps = {
     title: 'Recommendations',
-    onLoad: () => {},
-  }
-
-  state = {
-    selected: [],
+    excluded: [],
   }
 
   componentDidMount() {
@@ -40,38 +34,24 @@ class Recommendations extends React.Component<Props, State> {
       artists,
       tracks,
       genres,
-      onLoad,
       recommendations,
     } = this.props
     if (!recommendations.isFetching) {
-      this.props.fetchRecommendations({ artists, tracks, genres }).then((response) => {
-        if (response && response.type === 'RECOMMENDATIONS_SUCCESS' && response.data) {
-          this.setState({
-            selected: response.data,
-          })
-          if (onLoad) onLoad(response.data)
-        }
-      })
+      this.props.fetchRecommendations({ artists, tracks, genres })
     }
   }
 
-  handleToggle = (track: TrackType) => {
-    const { onChange } = this.props
-    const { selected } = this.state
-    if (!selected.includes(track)) {
-      selected.push(track)
-      onChange(selected)
-      this.setState({ selected })
-    } else {
-      const filtered = selected.filter(t => t.id !== track.id)
-      onChange(filtered)
-      this.setState({ selected: filtered })
-    }
-  }
+  componentWillReceiveProps(props){ console.log(props) }
 
   render() {
-    const { recommendations: { isFetching, error, data }, title } = this.props
-    const { selected } = this.state
+    const {
+      recommendations: { isFetching, error, data },
+      title,
+      onChange,
+      excluded,
+    } = this.props
+
+    console.log(excluded)
 
     if (isFetching) return <CircularProgress />
     if (error) return <p>Something went wrong: {error.message}</p>
@@ -83,8 +63,8 @@ class Recommendations extends React.Component<Props, State> {
           {data.map(track => (
             <Track
               key={track.id}
-              checked={selected.some(item => track.id === item.id)}
-              onClick={() => this.handleToggle(track)}
+              checked={!excluded.some(item => track.id === item.id)}
+              onClick={() => onChange(track)}
               track={track}
             />
           ))}

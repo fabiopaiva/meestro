@@ -56,7 +56,7 @@ class TopArtists extends React.Component<Props, State> {
       if (!limit || artists.length < limit) {
         artists.push(artist)
         onChange(artists)
-        this.setState({ artists })
+        this.setState({ artists: [...artists, artist] })
       }
     } else {
       const filtered = artists.filter(t => t.id !== artist.id)

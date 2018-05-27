@@ -1,7 +1,7 @@
 // @flow
 
 import { actions as userActions } from './users'
-import type { Dispatch } from '../types/store'
+import type { Dispatch, State } from '../types/store'
 import type { Params as RecommendationsParams } from '../reducers/recommendations'
 import type { Track } from '../types/spotify'
 
@@ -61,29 +61,32 @@ export const fetchTopArtists = () => async (dispatch: Dispatch) => {
 }
 
 export const fetchRecommendations =
-(params: RecommendationsParams) => async (dispatch: Dispatch) => {
-  dispatch({ type: actions.RECOMMENDATIONS_REQUEST, params })
-  try {
-    const { artists, tracks, genres } = params
-    const response = await fetch(`${API_URL}/spotify/recomendations`, {
-      credentials: 'include',
-      method: 'post',
-      body: JSON.stringify({
-        artists: artists.map(artist => artist.id),
-        tracks: tracks.map(track => track.id),
-        genres,
-      }),
-    })
-    const data = await response.json()
-    if (!response.ok) {
-      if (response.status === 401) {
-        return dispatch({ type: userActions.USER_AUTHENTICATE_UNAUTHORIZED, data })
+(params: RecommendationsParams) => async (dispatch: Dispatch, getState: () => State) => {
+  const { recommendations: { isFetching } } = getState()
+  if (!isFetching) {
+    dispatch({ type: actions.RECOMMENDATIONS_REQUEST, params })
+    try {
+      const { artists, tracks, genres } = params
+      const response = await fetch(`${API_URL}/spotify/recommendations`, {
+        credentials: 'include',
+        method: 'post',
+        body: JSON.stringify({
+          artists: artists.map(artist => artist.id),
+          tracks: tracks.map(track => track.id),
+          genres,
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        if (response.status === 401) {
+          return dispatch({ type: userActions.USER_AUTHENTICATE_UNAUTHORIZED, data })
+        }
+        throw new Error(data.error || response.statusText || 'Error')
       }
-      throw new Error(data.error || response.statusText || 'Error')
+      return dispatch({ type: actions.RECOMMENDATIONS_SUCCESS, data })
+    } catch (error) {
+      return dispatch({ type: actions.RECOMMENDATIONS_ERROR, error })
     }
-    return dispatch({ type: actions.RECOMMENDATIONS_SUCCESS, data })
-  } catch (error) {
-    return dispatch({ type: actions.RECOMMENDATIONS_ERROR, error })
   }
 }
 

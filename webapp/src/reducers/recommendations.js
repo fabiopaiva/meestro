@@ -14,7 +14,12 @@ export type RecommendationsState = {
   +isLoaded: boolean,
   +data: Recommendations,
   +error?: Error,
-  params: Params,
+  +params: Params,
+  +playlist: ?{
+    +external_urls: {
+      +spotify: string,
+    }
+  }
 }
 
 const initialState = {
@@ -26,6 +31,7 @@ const initialState = {
     tracks: [],
     genres: [],
   },
+  playlist: null,
 }
 
 export default (state: RecommendationsState = initialState, action: Action) => {
@@ -40,6 +46,11 @@ export default (state: RecommendationsState = initialState, action: Action) => {
         data: action.data,
         isFetching: false,
         isLoaded: true,
+      }
+    case actions.PLAYLIST_CREATE_SUCCESS:
+      return {
+        ...state,
+        playlist: action.data,
       }
     default:
       return state

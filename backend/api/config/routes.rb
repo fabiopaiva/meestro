@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   delete '/auth/logout', to: 'auth#destroy'
   get '/spotify/top-tracks', to: 'spotify#top_tracks'
   get '/spotify/top-artists', to: 'spotify#top_artists'
-  post '/spotify/recomendations', to: 'spotify#recomendations'
+  post '/spotify/recommendations', to: 'spotify#recommendations'
   post '/spotify/create-playlist', to: 'spotify#create_playlist'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
