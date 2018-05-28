@@ -1,7 +1,8 @@
 // @flow
 
 import { actions as userActions } from './users'
-import type { Dispatch, State } from '../types/store'
+import type { Dispatch } from '../types/store'
+import type { State } from '../types/state'
 import type { Params as RecommendationsParams } from '../reducers/recommendations'
 import type { Track } from '../types/spotify'
 
@@ -88,6 +89,7 @@ export const fetchRecommendations =
       return dispatch({ type: actions.RECOMMENDATIONS_ERROR, error })
     }
   }
+  return null
 }
 
 export const createPlaylist =
