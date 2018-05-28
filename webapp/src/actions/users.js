@@ -15,7 +15,7 @@ export const actions = {
 }
 
 export const authorize = () => {
-  window.location.href = `${process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3001'}/auth/spotify`
+  window.location.href = `${API_URL}/auth/spotify`
 }
 
 export const authenticate = () => async (dispatch: Dispatch) => {
