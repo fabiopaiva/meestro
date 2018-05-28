@@ -42,7 +42,7 @@ module Api
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins ENV['CLIENT_HOST']
+        origins ENV['CORS_HOST']
         resource '*', 
           headers: :any, 
           methods: [:get, :post, :options, :delete], 
