@@ -32,9 +32,11 @@ module Api
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    config.middleware.insert_after ActiveRecord::Migration::CheckPending, ActionDispatch::Cookies
-    config.middleware.insert_after ActionDispatch::Cookies, ActionDispatch::Session::CookieStore
+    # config.middleware.insert_after ActiveRecord::Migration::CheckPending, ActionDispatch::Cookies
+    # config.middleware.insert_after ActionDispatch::Cookies, ActionDispatch::Session::CookieStore
 
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
 
     RSpotify::authenticate(ENV["SPOTIFY_CLIENT_ID"], ENV["SPOTIFY_CLIENT_SECRET"])
 
