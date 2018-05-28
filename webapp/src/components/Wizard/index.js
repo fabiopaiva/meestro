@@ -129,7 +129,6 @@ class Wizard extends React.Component<Props, State> {
     const { genres } = this.state
     if (!genres.includes(genre)) {
       if (genres.length < 5) {
-        genres.push(genre)
         this.setState({ genres: [...genres, genre] })
       }
     } else {

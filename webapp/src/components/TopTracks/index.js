@@ -50,9 +50,9 @@ class TopTracks extends React.Component<Props, State> {
     const { tracks } = this.state
     if (!tracks.includes(track)) {
       if (!limit || tracks.length < limit) {
-        tracks.push(track)
-        onChange(tracks)
-        this.setState({ tracks: [...tracks, track] })
+        const newTracks = [...tracks, track]
+        onChange(newTracks)
+        this.setState({ tracks: newTracks })
       }
     } else {
       const filtered = tracks.filter(t => t.id !== track.id)
