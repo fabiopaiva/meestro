@@ -72,9 +72,9 @@ export const fetchRecommendations =
         credentials: 'include',
         method: 'post',
         body: JSON.stringify({
-          artists: artists.map(artist => artist.id),
-          tracks: tracks.map(track => track.id),
-          genres,
+          artists: Array.from(new Set(artists.map(artist => artist.id))),
+          tracks: Array.from(new Set(tracks.map(track => track.id))),
+          genres: Array.from(new Set(genres)),
         }),
       })
       const data = await response.json()
@@ -100,7 +100,7 @@ export const createPlaylist =
       credentials: 'include',
       method: 'post',
       body: JSON.stringify({
-        tracks: tracks.map(track => track.uri),
+        tracks: Array.from(new Set(tracks.map(track => track.uri))),
       }),
     })
     const data = await response.json()
