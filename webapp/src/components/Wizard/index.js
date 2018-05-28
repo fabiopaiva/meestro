@@ -186,8 +186,7 @@ class Wizard extends React.Component<Props, State> {
       excluded,
     } = this.state
     const steps = ['Select Tracks', 'Select Artists', 'Select Genres', 'Confirm your playlist']
-    console.log('render')
-    console.log(excluded)
+
     return (
       <div className={classes.container}>
         <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>

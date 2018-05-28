@@ -41,8 +41,6 @@ class Recommendations extends React.Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps(props){ console.log(props) }
-
   render() {
     const {
       recommendations: { isFetching, error, data },
@@ -50,8 +48,6 @@ class Recommendations extends React.Component<Props, State> {
       onChange,
       excluded,
     } = this.props
-
-    console.log(excluded)
 
     if (isFetching) return <CircularProgress />
     if (error) return <p>Something went wrong: {error.message}</p>
