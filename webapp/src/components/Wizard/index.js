@@ -28,6 +28,13 @@ import type {
 import type { State as ReduxState } from '../../types/state'
 import type { RecommendationsState } from '../../reducers/recommendations'
 
+const STEPS = {
+  SELECT_TRACKS: 0,
+  SELECT_ARTISTS: 1,
+  SELECT_GENRES: 2,
+  CONFIRM_PLAYLIST: 3,
+}
+
 const styles = theme => ({
   container: {
     flex: 1,
@@ -62,6 +69,7 @@ type State = {
   warningMessage: ?string,
   anchorEl: ?HTMLButtonElement,
   excluded: Array<TrackType>,
+  stepsDone: { [string]: boolean },
 }
 
 class Wizard extends React.Component<Props, State> {
@@ -69,10 +77,11 @@ class Wizard extends React.Component<Props, State> {
     topTracks: [],
     topArtists: [],
     genres: [],
-    activeStep: 0,
+    activeStep: STEPS.SELECT_TRACKS,
     warningMessage: null,
     anchorEl: null,
     excluded: [],
+    stepsDone: { 0: true },
   }
 
   handleTopTracksChange = (topTracks: TopTracksType) => {
@@ -100,22 +109,44 @@ class Wizard extends React.Component<Props, State> {
   handleNext = (event: Event) => {
     const {
       activeStep,
-      topTracks,
       anchorEl,
       excluded,
+      stepsDone,
     } = this.state
     const { recommendations } = this.props
     if (!anchorEl) {
       // $FlowFixMe Flow doesn't understand event.target returns a button html element
       this.setState({ anchorEl: event.target })
     }
-    if (topTracks.length === 0) {
-      this.setState({ warningMessage: 'Select at least one track' })
-    } else {
-      this.setState({ activeStep: activeStep <= 3 ? activeStep + 1 : activeStep })
-      if (activeStep === 3) {
+    if (this.isValid(activeStep + 1)) {
+      stepsDone[activeStep + 1] = true
+      this.setState({ activeStep: activeStep <= 3 ? activeStep + 1 : activeStep, stepsDone })
+      if (activeStep === STEPS.CONFIRM_PLAYLIST) {
         this.props.createPlaylist(recommendations.data.filter(item => !excluded.includes(item)))
       }
+    }
+  }
+
+  isValid(activeStep: number): boolean {
+    const {
+      topTracks,
+      topArtists,
+      genres,
+    } = this.state
+    if (activeStep === STEPS.CONFIRM_PLAYLIST &&
+      topTracks.length === 0 &&
+      topArtists.length === 0 &&
+      genres.length === 0
+    ) {
+      this.setState({ warningMessage: 'Select at least one track, artist or genre' })
+      return false
+    }
+    return true
+  }
+
+  goToStep(activeStep: number) {
+    if (this.isValid(activeStep)) {
+      this.setState({ activeStep })
     }
   }
 
@@ -183,15 +214,23 @@ class Wizard extends React.Component<Props, State> {
       topArtists,
       genres,
       excluded,
+      stepsDone,
     } = this.state
     const steps = ['Select Tracks', 'Select Artists', 'Select Genres', 'Confirm your playlist']
 
     return (
       <div className={classes.container}>
         <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
-          {steps.map(label => (
+          {steps.map((label, index) => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel>
+                {(index < activeStep || stepsDone[index]) && (
+                  <Button onClick={() => this.goToStep(index)}>
+                    {label}
+                  </Button>
+                )}
+                {index >= activeStep && !stepsDone[index] && label}
+              </StepLabel>
               <StepContent>
                 {activeStep === 0 && (
                   <TopTracks
