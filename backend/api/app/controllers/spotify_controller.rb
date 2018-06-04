@@ -1,4 +1,4 @@
-# RestClient.log = 'stdout'
+RestClient.log = 'stdout'
 
 class SpotifyController < ApplicationController
   before_action :set_user
@@ -20,18 +20,12 @@ class SpotifyController < ApplicationController
   end
 
   def recommendations
-    begin
-      information = request.raw_post
-      data_parsed = JSON.parse(information)
-
-      recommendations = RSpotify::Recommendations.generate(seed_genres: data_parsed["genres"]) if data_parsed["genres"].length > 0
-      recommendations = RSpotify::Recommendations.generate(seed_tracks: data_parsed["tracks"]) if data_parsed["tracks"].length > 0
-      recommendations = RSpotify::Recommendations.generate(seed_artists: data_parsed["artists"]) if data_parsed["artists"].length > 0
-      tracks = recommendations.tracks
-      render json: tracks
-    rescue => e
-      common_error(e)
-    end
+    information = request.raw_post
+    data_parsed = JSON.parse(information)
+    recommendations = RSpotify::Recommendations.generate({ seed_genres: data_parsed["genres"], seed_tracks: data_parsed["tracks"], seed_artists: data_parsed["artists"] })
+    render json: recommendations.tracks
+  rescue => e
+    common_error(e)
   end
 
   def create_playlist
